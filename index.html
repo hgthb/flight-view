@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR LIVE VIEW</title>
+    <title>RADAR VIEW A.123</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -15,99 +15,74 @@
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1200px;
-        }
+        .container { width: 100%; max-width: 1000px; }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 15px;
         }
 
-        h2 {
-            margin: 0;
-            color: var(--text-highlight);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        h2 { margin: 0; color: var(--text-highlight); font-size: 1.2rem; letter-spacing: 1px; }
 
-        #status-bar {
-            font-size: 0.9em;
-            color: #8b949e;
-        }
-
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #8b949e;
-            margin-right: 5px;
-        }
-
-        .status-dot.active { background-color: #2ea043; box-shadow: 0 0 8px #2ea043; }
+        #status-bar { font-size: 0.8em; color: #8b949e; display: flex; align-items: center; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: #8b949e; margin-right: 6px; display: inline-block; }
+        .status-dot.active { background-color: #2ea043; box-shadow: 0 0 5px #2ea043; }
         .status-dot.error { background-color: #da3633; }
 
-        .table-wrapper {
-            overflow-x: auto;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: var(--table-bg);
-            min-width: 600px;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background-color: #21262d;
-            color: var(--text-highlight);
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
+        .table-wrapper { overflow-x: auto; border-radius: 6px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; background-color: var(--table-bg); font-size: 13px; white-space: nowrap; }
+        th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th { background-color: #21262d; color: #8b949e; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
         tr:last-child td { border-bottom: none; }
         
-        .flight-id { color: var(--accent); font-weight: bold; font-size: 1.1em; }
-        .route { color: #e1e4e8; }
-        .time-box { 
-            font-family: 'Consolas', monospace;
-            background: #00000050;
-            padding: 4px 8px;
-            border-radius: 4px;
-            color: #79c0ff;
-        }
+        /* Cột 1: Chuyến bay */
+        .flight-cell { display: flex; flex-direction: column; }
+        .flight-id { color: #38bdf8; font-weight: 800; font-size: 1.1em; }
+        .reg-id { color: #facc15; font-size: 0.85em; font-weight: bold; }
+
+        /* Cột 2: Lộ trình */
+        .route-cell { display: flex; flex-direction: column; }
+        .route-main { font-weight: bold; color: #e1e4e8; font-size: 1.05em; margin-bottom: 4px; }
+        
+        /* Dòng thông tin máy bay + duration */
+        .ac-info { font-size: 0.85em; color: #8b949e; display: flex; align-items: center; }
+        .duration-text { color: #facc15; font-weight: bold; margin-left: 8px; display: flex; align-items: center; }
+        
+        .type-pill { display: inline-block; padding: 1px 4px; border-radius: 3px; font-size: 9px; font-weight: bold; margin-right: 5px; vertical-align: middle; }
+        .pill-arr { background: #1e40af; color: #bfdbfe; }
+        .pill-dep { background: #166534; color: #bbf7d0; }
+
+        /* Cột 3,4: Giờ */
+        .time-box { display: flex; flex-direction: column; font-family: 'Consolas', monospace; font-size: 1em; }
+        .time-row { display: flex; align-items: center; margin-bottom: 2px; }
+        
+        .prefix { font-weight: bold; margin-right: 4px; font-size: 0.85em; width: 12px; display: inline-block; }
+        .p-sched { color: #6e7681; } 
+        .p-est { color: #fbbf24; }   
+        .p-real { color: #4ade80; }  
+
+        .t-sched { color: #8b949e; }
+        .t-est { color: #f2cc8f; font-weight: bold; }
+        .t-real { color: #4ade80; font-weight: bold; }
+        
+        .empty-msg { text-align: center; padding: 20px; color: #8b949e; font-style: italic; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h2>RADAR LIVE VIEW</h2>
+        <h2>RADAR VIEW</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Đang kết nối...</span>
@@ -119,110 +94,104 @@
             <thead>
                 <tr>
                     <th>Chuyến bay</th>
-                    <th>Chặng bay</th>
-                    <th>Giờ đi (ATD)</th>
-                    <th>Giờ đến (ETA)</th>
+                    <th>Lộ trình / Máy bay</th>
+                    <th>Giờ Đi (Dep)</th>
+                    <th>Giờ Đến (Arr)</th>
                 </tr>
             </thead>
             <tbody id="table-body">
-                <tr>
-                    <td colspan="4" style="text-align: center; color: #8b949e;">
-                        Đang tải dữ liệu từ vệ tinh...
-                    </td>
-                </tr>
+                <tr><td colspan="4" class="empty-msg">Đang tải dữ liệu vệ tinh...</td></tr>
             </tbody>
         </table>
     </div>
 </div>
 
 <script>
-    // ==========================================
-    // CẤU HÌNH JSONBIN (CẬP NHẬT MỚI)
-    // ==========================================
+    // === CẤU HÌNH ===
     const BIN_ID = "69882ce643b1c97be96e151e";
-    // Dùng Access Key để đảm bảo an toàn cho Client (Chỉ đọc)
     const ACCESS_KEY = "$2a$10$E020cSPDeHQd0G9ytrUj3u1YSFJN0d9sP3X0B38kOk.sZoVNqZn8K";
 
     async function fetchData() {
         const dot = document.getElementById('dot');
         const statusText = document.getElementById('status-text');
-        
-        statusText.innerText = "Đang đồng bộ...";
-        dot.className = 'status-dot';
-
         try {
             const url = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest?nocache=${Date.now()}`;
-            
             const response = await fetch(url, {
                 method: 'GET',
-                headers: {
-                    'X-Access-Key': ACCESS_KEY, // Sử dụng Access Key theo yêu cầu
-                    'X-Bin-Meta': 'false',
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'X-Access-Key': ACCESS_KEY, 'X-Bin-Meta': 'false', 'Content-Type': 'application/json' }
             });
-
-            if (!response.ok) {
-                if (response.status === 401 || response.status === 403) {
-                    throw new Error("Lỗi quyền truy cập (Access Key sai hoặc Bin Private)");
-                } else if (response.status === 404) {
-                    throw new Error("Không tìm thấy Bin ID");
-                } else {
-                    throw new Error(`Lỗi mạng: ${response.status}`);
-                }
-            }
-
+            if (!response.ok) throw new Error(`Lỗi: ${response.status}`);
             const data = await response.json();
             
-            // Xử lý các trường hợp cấu trúc dữ liệu trả về
+            // Xử lý dữ liệu
             let flights = [];
-            if (Array.isArray(data)) {
-                flights = data;
-            } else if (data.record && Array.isArray(data.record)) {
-                flights = data.record;
-            } else if (data.flights && Array.isArray(data.flights)) {
-                flights = data.flights;
-            } else if (data.record && data.record.flights) {
-                flights = data.record.flights;
-            }
+            if (data.flights && Array.isArray(data.flights)) flights = data.flights;
+            else if (Array.isArray(data)) flights = data;
+            else if (data.record && data.record.flights) flights = data.record.flights;
 
             renderTable(flights);
-            
-            const time = new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
-            statusText.innerText = `Cập nhật lúc: ${time}`;
+            statusText.innerText = `Cập nhật: ${new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}`;
             dot.className = 'status-dot active';
-
         } catch (error) {
-            console.error("Lỗi chi tiết:", error);
-            statusText.innerText = `Lỗi: ${error.message}`;
+            console.error(error);
+            statusText.innerText = "Mất kết nối";
             dot.className = 'status-dot error';
         }
     }
 
     function renderTable(flights) {
         const tbody = document.getElementById('table-body');
-        
         if (!flights || flights.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Chưa có dữ liệu chuyến bay.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">Hiện không có chuyến bay nào.</td></tr>';
             return;
         }
 
-        let html = '';
-        flights.forEach(f => {
-            html += `
+        tbody.innerHTML = flights.map(f => {
+            const typeLabel = f.type === 'arr' ? 'ĐẾN' : 'ĐI';
+            const typeClass = f.type === 'arr' ? 'pill-arr' : 'pill-dep';
+            
+            // --- XỬ LÝ DURATION ---
+            // Bây giờ data đã có f.duration từ Admin gửi lên
+            const durationHtml = f.duration ? `<span class="duration-text">| ⏳ ${f.duration}</span>` : '';
+
+            // --- XỬ LÝ GIỜ (S/E/A) ---
+            const createTimeRow = (prefix, label, time) => {
+                if (!time || time === "--:--") return "";
+                let pClass = label === 'S' ? 'p-sched' : (label === 'E' ? 'p-est' : 'p-real');
+                let tClass = label === 'S' ? 't-sched' : (label === 'E' ? 't-est' : 't-real');
+                return `<div class="time-row"><span class="prefix ${pClass}">${label}:</span><span class="${tClass}">${time}</span></div>`;
+            };
+
+            // Logic hiển thị Giờ Đi
+            let depContent = createTimeRow('dep', 'S', f.dep_sched);
+            if (f.dep_real && f.dep_real !== "--:--") depContent += createTimeRow('dep', 'A', f.dep_real);
+            else if (f.dep_est && f.dep_est !== "--:--") depContent += createTimeRow('dep', 'E', f.dep_est);
+
+            // Logic hiển thị Giờ Đến
+            let arrContent = createTimeRow('arr', 'S', f.arr_sched);
+            if (f.arr_real && f.arr_real !== "--:--") arrContent += createTimeRow('arr', 'A', f.arr_real);
+            else if (f.arr_est && f.arr_est !== "--:--") arrContent += createTimeRow('arr', 'E', f.arr_est);
+
+            return `
                 <tr>
-                    <td class="flight-id">${f.full_name || f.name || '---'}</td>
-                    <td class="route">${f.route || '---'}</td>
-                    <td><span class="time-box">${f.atd || '--:--'}</span></td>
-                    <td><span class="time-box">${f.eta || '--:--'}</span></td>
-                </tr>
-            `;
-        });
-        tbody.innerHTML = html;
+                    <td><div class="flight-cell"><span class="flight-id">${f.flight || '---'}</span><span class="reg-id">${f.reg || ''}</span></div></td>
+                    <td>
+                        <div class="route-cell">
+                            <div class="route-main"><span class="type-pill ${typeClass}">${typeLabel}</span>${f.o_iata || '?'} ➝ ${f.d_iata || '?'}</div>
+                            <div class="ac-info">
+                                <span>${f.aircraft || ''}</span>
+                                ${durationHtml}
+                            </div>
+                        </div>
+                    </td>
+                    <td><div class="time-box">${depContent || '--:--'}</div></td>
+                    <td><div class="time-box">${arrContent || '--:--'}</div></td>
+                </tr>`;
+        }).join('');
     }
 
     fetchData();
-    setInterval(fetchData, 10000); // Tự động cập nhật 10s
+    setInterval(fetchData, 10000); 
 </script>
 
 </body>
