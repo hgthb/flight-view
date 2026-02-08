@@ -11,7 +11,7 @@
             --text-main: #c9d1d9;
             --text-highlight: #58a6ff;
             --border: #30363d;
-            --accent: #f2cc8f; /* Màu vàng nhạt cho số hiệu */
+            --accent: #f2cc8f;
         }
 
         body {
@@ -63,7 +63,6 @@
         .status-dot.active { background-color: #2ea043; box-shadow: 0 0 8px #2ea043; }
         .status-dot.error { background-color: #da3633; }
 
-        /* Bảng hiển thị */
         .table-wrapper {
             overflow-x: auto;
             border-radius: 6px;
@@ -74,7 +73,7 @@
             width: 100%;
             border-collapse: collapse;
             background-color: var(--table-bg);
-            min-width: 600px; /* Đảm bảo không bị co quá nhỏ trên mobile */
+            min-width: 600px;
         }
 
         th, td {
@@ -93,7 +92,6 @@
 
         tr:last-child td { border-bottom: none; }
         
-        /* Màu sắc dữ liệu */
         .flight-id { color: var(--accent); font-weight: bold; font-size: 1.1em; }
         .route { color: #e1e4e8; }
         .time-box { 
@@ -138,34 +136,35 @@
 </div>
 
 <script>
-    // === CẤU HÌNH KẾT NỐI (MASTER KEY) ===
-    const BIN_ID = "6987feeb43b1c97be96dcbb9";
-    const MASTER_KEY = "$2a$10$E020cSPDeHQd0G9ytrUj3u1YSFJN0d9sP3X0B38kOk.sZoVNqZn8K";
+    // ==========================================
+    // CẤU HÌNH JSONBIN (CẬP NHẬT MỚI)
+    // ==========================================
+    const BIN_ID = "69882ce643b1c97be96e151e";
+    // Dùng Access Key để đảm bảo an toàn cho Client (Chỉ đọc)
+    const ACCESS_KEY = "$2a$10$E020cSPDeHQd0G9ytrUj3u1YSFJN0d9sP3X0B38kOk.sZoVNqZn8K";
 
     async function fetchData() {
         const dot = document.getElementById('dot');
         const statusText = document.getElementById('status-text');
         
-        // Hiệu ứng đang tải
         statusText.innerText = "Đang đồng bộ...";
-        dot.className = 'status-dot'; // Reset màu
+        dot.className = 'status-dot';
 
         try {
-            // Thêm timestamp để tránh cache trình duyệt
             const url = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest?nocache=${Date.now()}`;
             
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
-                    'X-Master-Key': MASTER_KEY,
-                    'X-Bin-Meta': 'false', // Chỉ lấy dữ liệu lõi, bỏ qua metadata
+                    'X-Access-Key': ACCESS_KEY, // Sử dụng Access Key theo yêu cầu
+                    'X-Bin-Meta': 'false',
                     'Content-Type': 'application/json'
                 }
             });
 
             if (!response.ok) {
                 if (response.status === 401 || response.status === 403) {
-                    throw new Error("Lỗi quyền truy cập (Key/Private)");
+                    throw new Error("Lỗi quyền truy cập (Access Key sai hoặc Bin Private)");
                 } else if (response.status === 404) {
                     throw new Error("Không tìm thấy Bin ID");
                 } else {
@@ -175,36 +174,28 @@
 
             const data = await response.json();
             
-            // Xử lý thông minh: Dữ liệu có thể nằm ở data.record hoặc data trực tiếp
+            // Xử lý các trường hợp cấu trúc dữ liệu trả về
             let flights = [];
-            
             if (Array.isArray(data)) {
-                flights = data; // Trường hợp 1: data là mảng luôn
+                flights = data;
             } else if (data.record && Array.isArray(data.record)) {
-                flights = data.record; // Trường hợp 2: data bọc trong record (mảng)
+                flights = data.record;
             } else if (data.flights && Array.isArray(data.flights)) {
-                flights = data.flights; // Trường hợp 3: data.flights
+                flights = data.flights;
             } else if (data.record && data.record.flights) {
-                flights = data.record.flights; // Trường hợp 4: data.record.flights
+                flights = data.record.flights;
             }
 
             renderTable(flights);
             
-            // Cập nhật trạng thái thành công
             const time = new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
             statusText.innerText = `Cập nhật lúc: ${time}`;
-            dot.className = 'status-dot active'; // Màu xanh
+            dot.className = 'status-dot active';
 
         } catch (error) {
             console.error("Lỗi chi tiết:", error);
             statusText.innerText = `Lỗi: ${error.message}`;
-            dot.className = 'status-dot error'; // Màu đỏ
-            
-            // Nếu bảng đang trống thì hiện thông báo lỗi vào bảng
-            const tbody = document.getElementById('table-body');
-            if (tbody.rows.length <= 1 && tbody.rows[0].innerText.includes("Đang tải")) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #ff6b6b;">${error.message}. Vui lòng kiểm tra Console (F12).</td></tr>`;
-            }
+            dot.className = 'status-dot error';
         }
     }
 
@@ -230,12 +221,8 @@
         tbody.innerHTML = html;
     }
 
-    // Chạy lần đầu
     fetchData();
-
-    // Tự động cập nhật mỗi 10 giây
-    setInterval(fetchData, 10000);
-
+    setInterval(fetchData, 10000); // Tự động cập nhật 10s
 </script>
 
 </body>
