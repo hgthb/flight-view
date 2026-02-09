@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW C.10</title>
+    <title>RADAR VIEW C.11</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -54,9 +54,16 @@
         th, td { padding: 4px 2px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
         th { background-color: #21262d; color: #8b949e; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
         
-        .col-idx { text-align: center; width: 25px; color: #8b949e; font-weight: bold; }
+        /* --- UPDATE C.11: MÀU NÂU CÀ PHÊ SÁNG --- */
+        .col-idx { 
+            text-align: center; 
+            width: 25px; 
+            color: #d99a6c; /* Nâu cà phê sáng */
+            font-weight: 900; 
+            text-shadow: 1px 1px 2px #000; /* Shadow đen để nổi bật */
+        }
 
-        /* --- MÀU NỀN CỰC SÁNG (giữ nguyên C.9) --- */
+        /* --- MÀU NỀN CỰC SÁNG (giữ nguyên C.10) --- */
         .pair-blue { 
             background-color: rgba(0, 220, 255, 0.5); 
             border-left: 4px solid #00d4ff; 
@@ -70,20 +77,14 @@
             border-left: 4px solid #ff3333; 
         }
 
-        /* --- TEXT SÁNG RỰC & TƯƠNG PHẢN (Shadow đen để nổi trên nền sáng) --- */
-        .text-shadow-pop { text-shadow: 1px 1px 2px #000000, 0 0 1px #000000; }
-
+        /* --- TEXT SÁNG RỰC & TƯƠNG PHẢN --- */
         .flight-cell { display: flex; flex-direction: column; }
-        /* Số hiệu: Trắng tinh + Shadow đen */
         .flight-id { color: #ffffff; font-weight: 900; font-size: 1.15em; text-shadow: 2px 2px 2px #000; }
-        /* Số đăng bạ: Vàng chanh + Shadow đen */
         .reg-id { color: #ffff00; font-size: 0.9em; font-weight: bold; text-shadow: 1px 1px 2px #000; }
 
         .route-cell { display: flex; flex-direction: column; max-width: 110px; overflow: hidden; }
-        /* Lộ trình: Trắng sáng + Shadow */
         .route-main { font-weight: 800; color: #ffffff; font-size: 1em; margin-bottom: 2px; text-shadow: 1px 1px 2px #000; }
         
-        /* Tên máy bay: Trắng xám sáng */
         .ac-info { font-size: 0.85em; color: #e2e8f0; display: flex; align-items: center; text-shadow: 1px 1px 1px rgba(0,0,0,0.8); }
         .duration-text { color: #ffff00; font-weight: bold; margin-left: 4px; display: flex; align-items: center; }
         
@@ -95,11 +96,10 @@
         .time-row { display: flex; align-items: center; margin-bottom: 1px; }
         
         .prefix { font-weight: bold; margin-right: 2px; font-size: 0.8em; width: 10px; display: inline-block; }
-        .p-sched { color: #cbd5e1; } /* Xám sáng */
-        .p-est { color: #facc15; }   /* Vàng */
-        .p-real { color: #4ade80; }  /* Xanh lá */
+        .p-sched { color: #cbd5e1; } 
+        .p-est { color: #facc15; }   
+        .p-real { color: #4ade80; }  
 
-        /* Giờ: Trắng và Xanh lá sáng */
         .t-sched { color: #ffffff; font-weight: bold; }
         .t-est { color: #fef08a; font-weight: bold; }
         .t-real { color: #00ff00; font-weight: 900; }
@@ -162,7 +162,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW C.10</h2>
+        <h2>RADAR VIEW C.11</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
