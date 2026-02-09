@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW C.11</title>
+    <title>RADAR VIEW C.12</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -52,18 +52,32 @@
         table { width: 100%; border-collapse: collapse; background-color: var(--table-bg); font-size: 11px; white-space: nowrap; }
         
         th, td { padding: 4px 2px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
-        th { background-color: #21262d; color: #8b949e; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
         
-        /* --- UPDATE C.11: MÀU NÂU CÀ PHÊ SÁNG --- */
+        /* --- UPDATE C.12: TIÊU ĐỀ ĐỎ RỰC & ĐẬM --- */
+        th {
+            background-color: #21262d;
+            color: #ff0000; /* Đỏ tươi sáng rực */
+            font-weight: 900; /* Đậm nhất (Bold) */
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 2px #000; /* Shadow để nổi bật */
+        }
+        
+        /* Class chung cho cột STT (giữ layout) */
         .col-idx { 
             text-align: center; 
             width: 25px; 
-            color: #d99a6c; /* Nâu cà phê sáng */
             font-weight: 900; 
-            text-shadow: 1px 1px 2px #000; /* Shadow đen để nổi bật */
+            text-shadow: 1px 1px 2px #000; 
+        }
+        
+        /* Chỉ áp dụng màu nâu cho ô dữ liệu (td) của cột STT */
+        td.col-idx {
+             color: #d99a6c; /* Nâu cà phê sáng */
         }
 
-        /* --- MÀU NỀN CỰC SÁNG (giữ nguyên C.10) --- */
+
+        /* --- MÀU NỀN CỰC SÁNG (giữ nguyên C.11) --- */
         .pair-blue { 
             background-color: rgba(0, 220, 255, 0.5); 
             border-left: 4px solid #00d4ff; 
@@ -162,7 +176,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW C.11</h2>
+        <h2>RADAR VIEW C.12</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
