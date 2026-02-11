@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW C.12</title>
+    <title>RADAR VIEW C.13</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -53,7 +53,7 @@
         
         th, td { padding: 4px 2px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
-        /* --- UPDATE C.12: TIÊU ĐỀ ĐỎ RỰC & ĐẬM --- */
+        /* --- UPDATE C.12 STYLE --- */
         th {
             background-color: #21262d;
             color: #ff0000; /* Đỏ tươi sáng rực */
@@ -176,7 +176,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW C.12</h2>
+        <h2>RADAR VIEW C.13</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -227,34 +227,91 @@
     const today = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
     dateInput.value = today;
 
+    // --- C.13 UPDATE: Device ID Generation ---
+    function getDeviceId() {
+        let id = localStorage.getItem('radar_device_id_c13');
+        if (!id) {
+            id = 'dev_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            localStorage.setItem('radar_device_id_c13', id);
+        }
+        return id;
+    }
+
     function checkLimit() {
-        const isRegistered = localStorage.getItem('viewer_registered_c4');
+        const deviceId = getDeviceId();
         const limitRef = ref(db, 'settings/count_link');
 
-        if (isRegistered) {
-            statusText.innerText = "Authorized";
-            dot.className = "status-dot active";
-            loadData(); 
-        } else {
-            runTransaction(limitRef, (currentCount) => {
-                if (currentCount === null) return 1; 
-                if (currentCount >= 50) return; 
-                return currentCount + 1;
-            }).then((result) => {
-                if (result.committed) {
-                    localStorage.setItem('viewer_registered_c4', 'true');
-                    statusText.innerText = "Authorized (New)";
-                    dot.className = "status-dot active";
-                    loadData();
-                } else {
-                    limitMsg.style.display = "flex";
-                    document.body.style.overflow = "hidden";
-                }
-            }).catch(err => {
-                console.error(err);
-                statusText.innerText = "Error Check";
-            });
-        }
+        runTransaction(limitRef, (currentData) => {
+            // 1. Khởi tạo dữ liệu nếu chưa có
+            if (currentData === null) {
+                return { counts: 1, id_list: deviceId };
+            }
+
+            // 2. Xử lý tương thích ngược (nếu dữ liệu cũ là số)
+            let data = typeof currentData === 'number' ? { counts: currentData, id_list: "" } : currentData;
+            
+            // Đảm bảo các trường tồn tại
+            const currentCount = data.counts || 0;
+            const currentList = data.id_list || "";
+
+            // 3. Kiểm tra nếu ID đã tồn tại trong danh sách
+            // Tách chuỗi thành mảng để check chính xác
+            const idArray = currentList.split('\n');
+            if (idArray.includes(deviceId)) {
+                return; // Đã có trong list -> Không làm gì (Abort transaction), giữ nguyên data
+            }
+
+            // 4. Nếu chưa có, kiểm tra giới hạn (Max 50)
+            if (currentCount >= 50) {
+                return; // Quá giới hạn -> Abort transaction
+            }
+
+            // 5. Nếu chưa full -> Thêm vào list và tăng count
+            return {
+                counts: currentCount + 1,
+                id_list: currentList ? currentList + "\n" + deviceId : deviceId
+            };
+
+        }).then((result) => {
+            // Transaction hoàn tất (committed = true nếu ghi thành công, committed = false nếu abort)
+            // Tuy nhiên, nếu ta return undefined (abort) thì committed là false.
+            // Ta cần check lại dữ liệu thực tế để biết mình có được authorized không.
+            
+            if (result.committed) {
+                // Trường hợp ghi mới thành công
+                statusText.innerText = "Authorized (New)";
+                dot.className = "status-dot active";
+                loadData();
+            } else {
+                // Trường hợp transaction bị hủy (có thể do đã tồn tại hoặc do full)
+                // Ta phải đọc lại data để biết chắc chắn
+                get(limitRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        // Xử lý data cũ (số) hoặc mới (object)
+                        const rawList = (typeof data === 'number') ? "" : (data.id_list || "");
+                        const idArray = rawList.split('\n');
+                        
+                        if (idArray.includes(deviceId)) {
+                            statusText.innerText = "Authorized";
+                            dot.className = "status-dot active";
+                            loadData();
+                        } else {
+                            // Không có trong list và transaction fail -> Quá giới hạn
+                            limitMsg.style.display = "flex";
+                            document.body.style.overflow = "hidden";
+                            statusText.innerText = "Over Limit";
+                        }
+                    } else {
+                        // Lỗi không đọc được data
+                        statusText.innerText = "Error Data";
+                    }
+                });
+            }
+        }).catch(err => {
+            console.error("Check Error:", err);
+            statusText.innerText = "Error Check";
+        });
     }
 
     let currentListener = null;
