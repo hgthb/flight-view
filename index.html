@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW C.13</title>
+    <title>RADAR VIEW C.14</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -14,7 +14,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
-            color: #ffffff; /* Mặc định chữ trắng */
+            color: #ffffff;
             margin: 0;
             padding: 5px;
             display: flex;
@@ -38,7 +38,7 @@
 
         .input-group {
             display: flex; gap: 5px; margin-bottom: 10px; background: #21262d; padding: 5px; border-radius: 6px; border: 1px solid var(--border);
-            align-items: center; justify-content: center;
+            align-items: center; justify-content: center; flex-wrap: wrap;
         }
         .input-group input {
             background: #0d1117; border: 1px solid #30363d; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-align: center; font-size: 12px;
@@ -48,50 +48,34 @@
         }
         .input-group button:hover { background: #2ea043; }
         
+        /* Style riêng cho ô tìm kiếm */
+        #v-search {
+            border: 1px solid #58a6ff; 
+            color: #58a6ff;
+        }
+        #v-search::placeholder { color: #58a6ff; opacity: 0.7; }
+
         .table-wrapper { overflow-x: auto; border-radius: 6px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; background-color: var(--table-bg); font-size: 11px; white-space: nowrap; }
         
         th, td { padding: 4px 2px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
-        /* --- UPDATE C.12 STYLE --- */
         th {
             background-color: #21262d;
-            color: #ff0000; /* Đỏ tươi sáng rực */
-            font-weight: 900; /* Đậm nhất (Bold) */
+            color: #ff0000; 
+            font-weight: 900; 
             font-size: 0.8rem;
             text-transform: uppercase;
-            text-shadow: 1px 1px 2px #000; /* Shadow để nổi bật */
+            text-shadow: 1px 1px 2px #000;
         }
         
-        /* Class chung cho cột STT (giữ layout) */
-        .col-idx { 
-            text-align: center; 
-            width: 25px; 
-            font-weight: 900; 
-            text-shadow: 1px 1px 2px #000; 
-        }
-        
-        /* Chỉ áp dụng màu nâu cho ô dữ liệu (td) của cột STT */
-        td.col-idx {
-             color: #d99a6c; /* Nâu cà phê sáng */
-        }
+        .col-idx { text-align: center; width: 25px; font-weight: 900; text-shadow: 1px 1px 2px #000; }
+        td.col-idx { color: #d99a6c; }
 
+        .pair-blue { background-color: rgba(0, 220, 255, 0.5); border-left: 4px solid #00d4ff; } 
+        .pair-brown { background-color: rgba(255, 180, 0, 0.5); border-left: 4px solid #ffcc00; }
+        .standalone { background-color: rgba(255, 50, 50, 0.35); border-left: 4px solid #ff3333; }
 
-        /* --- MÀU NỀN CỰC SÁNG (giữ nguyên C.11) --- */
-        .pair-blue { 
-            background-color: rgba(0, 220, 255, 0.5); 
-            border-left: 4px solid #00d4ff; 
-        } 
-        .pair-brown { 
-            background-color: rgba(255, 180, 0, 0.5); 
-            border-left: 4px solid #ffcc00; 
-        }
-        .standalone { 
-            background-color: rgba(255, 50, 50, 0.35); 
-            border-left: 4px solid #ff3333; 
-        }
-
-        /* --- TEXT SÁNG RỰC & TƯƠNG PHẢN --- */
         .flight-cell { display: flex; flex-direction: column; }
         .flight-id { color: #ffffff; font-weight: 900; font-size: 1.15em; text-shadow: 2px 2px 2px #000; }
         .reg-id { color: #ffff00; font-size: 0.9em; font-weight: bold; text-shadow: 1px 1px 2px #000; }
@@ -110,13 +94,8 @@
         .time-row { display: flex; align-items: center; margin-bottom: 1px; }
         
         .prefix { font-weight: bold; margin-right: 2px; font-size: 0.8em; width: 10px; display: inline-block; }
-        .p-sched { color: #cbd5e1; } 
-        .p-est { color: #facc15; }   
-        .p-real { color: #4ade80; }  
-
-        .t-sched { color: #ffffff; font-weight: bold; }
-        .t-est { color: #fef08a; font-weight: bold; }
-        .t-real { color: #00ff00; font-weight: 900; }
+        .p-sched { color: #cbd5e1; } .p-est { color: #facc15; } .p-real { color: #4ade80; }  
+        .t-sched { color: #ffffff; font-weight: bold; } .t-est { color: #fef08a; font-weight: bold; } .t-real { color: #00ff00; font-weight: 900; }
         
         .status-cell { font-weight: bold; font-size: 0.85em; }
         .st-box { padding: 2px 4px; border-radius: 3px; display: flex; gap: 3px; text-transform: uppercase; font-size: 9px; align-items: center; width: fit-content; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); }
@@ -134,6 +113,15 @@
             z-index: 10000; justify-content: center; align-items: center; flex-direction: column;
         }
 
+        /* --- UPDATE C.14: Animation cho Search --- */
+        @keyframes row-flash {
+            0%, 100% { background-color: transparent; }
+            50% { background-color: rgba(255, 255, 255, 0.8); } /* Chớp sáng trắng */
+        }
+        .row-highlight {
+            animation: row-flash 0.5s ease-in-out 3; /* Chớp 3 lần */
+        }
+
         @media (min-width: 768px) {
             body { padding: 20px; }
             h2 { font-size: 1.5rem; margin-bottom: 20px; }
@@ -142,6 +130,8 @@
             .input-group { padding: 10px; gap: 15px; margin-bottom: 20px; }
             .input-group input { font-size: 16px; padding: 8px 12px; width: 80px !important; }
             .input-group input[type="date"] { width: 150px !important; }
+            /* C.14: Search box rộng hơn trên PC */
+            #v-search { width: 120px !important; }
             .input-group button { font-size: 14px; padding: 8px 20px; }
 
             table { font-size: 14px; }
@@ -150,19 +140,9 @@
             .col-idx { width: 40px; font-size: 1.1em; }
 
             .pair-blue, .pair-brown, .standalone { border-left-width: 4px; }
-
-            .flight-id { font-size: 1.3em; }
-            .reg-id { font-size: 1em; }
-            
-            .route-cell { max-width: none; }
+            .flight-id { font-size: 1.3em; } .reg-id { font-size: 1em; }
             .route-main { font-size: 1.2em; margin-bottom: 5px; }
-            .ac-info { font-size: 1em; }
-            .type-pill { padding: 2px 6px; font-size: 10px; }
-
             .time-box { font-size: 1.1em; }
-            .prefix { width: 15px; margin-right: 5px; }
-            
-            .status-cell { font-size: 1em; }
             .st-box { padding: 5px 10px; font-size: 11px; }
         }
     </style>
@@ -176,7 +156,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW C.13</h2>
+        <h2>RADAR VIEW C.14</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -187,6 +167,7 @@
         <input type="text" id="v-airport" value="PXU" placeholder="CODE" style="width: 50px; text-transform: uppercase;">
         <input type="date" id="v-date" style="width: 110px;">
         <button id="v-load">XEM</button>
+        <input type="text" id="v-search" placeholder="🔍 Tìm..." style="width: 80px; text-transform: uppercase;">
     </div>
 
     <div class="table-wrapper">
@@ -219,6 +200,7 @@
     const airportInput = document.getElementById('v-airport');
     const dateInput = document.getElementById('v-date');
     const btnLoad = document.getElementById('v-load');
+    const searchInput = document.getElementById('v-search'); // C.14 Reference
     const dot = document.getElementById('dot');
     const statusText = document.getElementById('status-text');
     const tableBody = document.getElementById('table-body');
@@ -227,7 +209,7 @@
     const today = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
     dateInput.value = today;
 
-    // --- C.13 UPDATE: Device ID Generation ---
+    // --- Device ID & Limit Check (Logic C.13) ---
     function getDeviceId() {
         let id = localStorage.getItem('radar_device_id_c13');
         if (!id) {
@@ -242,79 +224,71 @@
         const limitRef = ref(db, 'settings/count_link');
 
         runTransaction(limitRef, (currentData) => {
-            // 1. Khởi tạo dữ liệu nếu chưa có
-            if (currentData === null) {
-                return { counts: 1, id_list: deviceId };
-            }
-
-            // 2. Xử lý tương thích ngược (nếu dữ liệu cũ là số)
+            if (currentData === null) return { counts: 1, id_list: deviceId };
             let data = typeof currentData === 'number' ? { counts: currentData, id_list: "" } : currentData;
-            
-            // Đảm bảo các trường tồn tại
             const currentCount = data.counts || 0;
             const currentList = data.id_list || "";
-
-            // 3. Kiểm tra nếu ID đã tồn tại trong danh sách
-            // Tách chuỗi thành mảng để check chính xác
             const idArray = currentList.split('\n');
-            if (idArray.includes(deviceId)) {
-                return; // Đã có trong list -> Không làm gì (Abort transaction), giữ nguyên data
-            }
+            
+            if (idArray.includes(deviceId)) return; 
+            if (currentCount >= 50) return; 
 
-            // 4. Nếu chưa có, kiểm tra giới hạn (Max 50)
-            if (currentCount >= 50) {
-                return; // Quá giới hạn -> Abort transaction
-            }
-
-            // 5. Nếu chưa full -> Thêm vào list và tăng count
             return {
                 counts: currentCount + 1,
                 id_list: currentList ? currentList + "\n" + deviceId : deviceId
             };
-
         }).then((result) => {
-            // Transaction hoàn tất (committed = true nếu ghi thành công, committed = false nếu abort)
-            // Tuy nhiên, nếu ta return undefined (abort) thì committed là false.
-            // Ta cần check lại dữ liệu thực tế để biết mình có được authorized không.
-            
             if (result.committed) {
-                // Trường hợp ghi mới thành công
                 statusText.innerText = "Authorized (New)";
                 dot.className = "status-dot active";
                 loadData();
             } else {
-                // Trường hợp transaction bị hủy (có thể do đã tồn tại hoặc do full)
-                // Ta phải đọc lại data để biết chắc chắn
                 get(limitRef).then((snapshot) => {
                     if (snapshot.exists()) {
                         const data = snapshot.val();
-                        // Xử lý data cũ (số) hoặc mới (object)
                         const rawList = (typeof data === 'number') ? "" : (data.id_list || "");
                         const idArray = rawList.split('\n');
-                        
                         if (idArray.includes(deviceId)) {
                             statusText.innerText = "Authorized";
                             dot.className = "status-dot active";
                             loadData();
                         } else {
-                            // Không có trong list và transaction fail -> Quá giới hạn
                             limitMsg.style.display = "flex";
                             document.body.style.overflow = "hidden";
                             statusText.innerText = "Over Limit";
                         }
-                    } else {
-                        // Lỗi không đọc được data
-                        statusText.innerText = "Error Data";
-                    }
+                    } else { statusText.innerText = "Error Data"; }
                 });
             }
-        }).catch(err => {
-            console.error("Check Error:", err);
-            statusText.innerText = "Error Check";
-        });
+        }).catch(err => { console.error(err); statusText.innerText = "Error Check"; });
     }
 
-    let currentListener = null;
+    // --- Search Function (C.14 Logic) ---
+    searchInput.addEventListener('input', function() {
+        const term = this.value.toUpperCase().trim();
+        const rows = tableBody.querySelectorAll('tr');
+        
+        // Remove highlight cũ
+        rows.forEach(r => r.classList.remove('row-highlight'));
+
+        if(term.length < 2) return; // Chỉ tìm khi nhập trên 2 ký tự
+
+        let found = false;
+        rows.forEach(row => {
+            if(found) return; // Chỉ lấy kết quả đầu tiên tìm thấy
+            const flightIdEl = row.querySelector('.flight-id');
+            if(flightIdEl) {
+                const flightId = flightIdEl.textContent;
+                if(flightId.includes(term)) {
+                    // Scroll tới giữa
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Thêm hiệu ứng nhấp nháy
+                    row.classList.add('row-highlight');
+                    found = true;
+                }
+            }
+        });
+    });
 
     function loadData() {
         const airport = airportInput.value.toUpperCase().trim();
@@ -333,6 +307,8 @@
                 renderTable(rawFlights);
                 statusText.innerText = `Online: ${new Date().toLocaleTimeString('vi-VN')}`;
                 dot.className = "status-dot active";
+                // Reset search nếu có
+                if(searchInput.value) searchInput.dispatchEvent(new Event('input'));
             } else {
                 tableBody.innerHTML = '<tr><td colspan="6" class="empty-msg">No Data.</td></tr>';
                 statusText.innerText = "No Data";
