@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW C.14</title>
+    <title>RADAR VIEW C.15</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -48,12 +48,26 @@
         }
         .input-group button:hover { background: #2ea043; }
         
-        /* Style riêng cho ô tìm kiếm */
-        #v-search {
-            border: 1px solid #58a6ff; 
-            color: #58a6ff;
-        }
+        #v-search { border: 1px solid #58a6ff; color: #58a6ff; }
         #v-search::placeholder { color: #58a6ff; opacity: 0.7; }
+
+        /* --- UPDATE C.15: ABOUT LABEL STYLE (Khắc chìm ánh bạc) --- */
+        #about-label {
+            font-size: 10px;
+            font-weight: 900;
+            color: #8b949e; /* Màu xám cơ bản */
+            text-transform: uppercase;
+            cursor: pointer;
+            user-select: none;
+            margin-left: 5px;
+            /* Hiệu ứng khắc chìm ánh bạc: Shadow tối bên trên, sáng bên dưới */
+            text-shadow: -1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.1);
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        #about-label:hover {
+            color: #c9d1d9; /* Sáng hơn khi hover */
+        }
 
         .table-wrapper { overflow-x: auto; border-radius: 6px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; background-color: var(--table-bg); font-size: 11px; white-space: nowrap; }
@@ -61,12 +75,8 @@
         th, td { padding: 4px 2px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
         th {
-            background-color: #21262d;
-            color: #ff0000; 
-            font-weight: 900; 
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            text-shadow: 1px 1px 2px #000;
+            background-color: #21262d; color: #ff0000; font-weight: 900; font-size: 0.8rem;
+            text-transform: uppercase; text-shadow: 1px 1px 2px #000;
         }
         
         .col-idx { text-align: center; width: 25px; font-weight: 900; text-shadow: 1px 1px 2px #000; }
@@ -113,14 +123,26 @@
             z-index: 10000; justify-content: center; align-items: center; flex-direction: column;
         }
 
-        /* --- UPDATE C.14: Animation cho Search --- */
-        @keyframes row-flash {
-            0%, 100% { background-color: transparent; }
-            50% { background-color: rgba(255, 255, 255, 0.8); } /* Chớp sáng trắng */
+        /* --- UPDATE C.15: INFO MODAL STYLE --- */
+        #about-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 20000;
+            justify-content: center; align-items: center;
+            backdrop-filter: blur(2px);
         }
-        .row-highlight {
-            animation: row-flash 0.5s ease-in-out 3; /* Chớp 3 lần */
+        .about-content {
+            background: #161b22; border: 1px solid #30363d; padding: 25px; border-radius: 12px;
+            text-align: center; color: #e6edf3; box-shadow: 0 0 25px rgba(0,0,0,0.9);
+            min-width: 260px;
+            animation: fadeIn 0.2s ease-out;
         }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .about-content p { margin: 12px 0; font-size: 15px; font-weight: 500; letter-spacing: 0.5px; border-bottom: 1px dashed #30363d; padding-bottom: 5px; }
+        .about-content p:last-child { border-bottom: none; }
+
+        /* Animation cho Search */
+        @keyframes row-flash { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(255, 255, 255, 0.8); } }
+        .row-highlight { animation: row-flash 0.5s ease-in-out 3; }
 
         @media (min-width: 768px) {
             body { padding: 20px; }
@@ -130,9 +152,10 @@
             .input-group { padding: 10px; gap: 15px; margin-bottom: 20px; }
             .input-group input { font-size: 16px; padding: 8px 12px; width: 80px !important; }
             .input-group input[type="date"] { width: 150px !important; }
-            /* C.14: Search box rộng hơn trên PC */
             #v-search { width: 120px !important; }
             .input-group button { font-size: 14px; padding: 8px 20px; }
+            
+            #about-label { font-size: 12px; margin-left: 10px; }
 
             table { font-size: 14px; }
             th, td { padding: 10px 15px; }
@@ -149,6 +172,15 @@
 </head>
 <body>
 
+<div id="about-modal">
+    <div class="about-content">
+        <p style="color: #58a6ff; font-weight: bold; border: none; font-size: 1.1rem; margin-bottom: 15px;">CREDITS</p>
+        <p>Developed by Mr Hưng</p>
+        <p>Tel : 0965594679</p>
+        <p>Email : ndhung.pl@gmail.com</p>
+    </div>
+</div>
+
 <div id="over-limit-msg">
     <div>⚠️ OVER LIMIT !</div>
     <div style="font-size: 1rem; color: #888; margin-top: 10px;">Vui lòng liên hệ Admin</div>
@@ -156,7 +188,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW C.14</h2>
+        <h2>RADAR VIEW C.15</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -168,6 +200,7 @@
         <input type="date" id="v-date" style="width: 110px;">
         <button id="v-load">XEM</button>
         <input type="text" id="v-search" placeholder="🔍 Tìm..." style="width: 80px; text-transform: uppercase;">
+        <span id="about-label" title="Double Click to view info">ABOUT</span>
     </div>
 
     <div class="table-wrapper">
@@ -200,16 +233,30 @@
     const airportInput = document.getElementById('v-airport');
     const dateInput = document.getElementById('v-date');
     const btnLoad = document.getElementById('v-load');
-    const searchInput = document.getElementById('v-search'); // C.14 Reference
+    const searchInput = document.getElementById('v-search');
     const dot = document.getElementById('dot');
     const statusText = document.getElementById('status-text');
     const tableBody = document.getElementById('table-body');
     const limitMsg = document.getElementById('over-limit-msg');
+    
+    // --- UPDATE C.15: ABOUT LOGIC ---
+    const aboutLabel = document.getElementById('about-label');
+    const aboutModal = document.getElementById('about-modal');
+
+    aboutLabel.addEventListener('dblclick', () => {
+        aboutModal.style.display = 'flex';
+    });
+
+    aboutModal.addEventListener('click', (e) => {
+        // Chỉ đóng khi click vào vùng tối (overlay), không đóng khi click vào nội dung
+        if (e.target === aboutModal) {
+            aboutModal.style.display = 'none';
+        }
+    });
 
     const today = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
     dateInput.value = today;
 
-    // --- Device ID & Limit Check (Logic C.13) ---
     function getDeviceId() {
         let id = localStorage.getItem('radar_device_id_c13');
         if (!id) {
@@ -263,26 +310,21 @@
         }).catch(err => { console.error(err); statusText.innerText = "Error Check"; });
     }
 
-    // --- Search Function (C.14 Logic) ---
     searchInput.addEventListener('input', function() {
         const term = this.value.toUpperCase().trim();
         const rows = tableBody.querySelectorAll('tr');
-        
-        // Remove highlight cũ
         rows.forEach(r => r.classList.remove('row-highlight'));
 
-        if(term.length < 2) return; // Chỉ tìm khi nhập trên 2 ký tự
+        if(term.length < 2) return;
 
         let found = false;
         rows.forEach(row => {
-            if(found) return; // Chỉ lấy kết quả đầu tiên tìm thấy
+            if(found) return;
             const flightIdEl = row.querySelector('.flight-id');
             if(flightIdEl) {
                 const flightId = flightIdEl.textContent;
                 if(flightId.includes(term)) {
-                    // Scroll tới giữa
                     row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // Thêm hiệu ứng nhấp nháy
                     row.classList.add('row-highlight');
                     found = true;
                 }
@@ -307,7 +349,6 @@
                 renderTable(rawFlights);
                 statusText.innerText = `Online: ${new Date().toLocaleTimeString('vi-VN')}`;
                 dot.className = "status-dot active";
-                // Reset search nếu có
                 if(searchInput.value) searchInput.dispatchEvent(new Event('input'));
             } else {
                 tableBody.innerHTML = '<tr><td colspan="6" class="empty-msg">No Data.</td></tr>';
