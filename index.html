@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW C.16</title>
+    <title>RADAR VIEW A.3</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -76,12 +76,12 @@
              color: #d99a6c; /* Nâu cà phê sáng */
         }
 
-        /* --- UPDATE A.1: HIỆU ỨNG NHẤP NHÁY --- */
+        /* --- UPDATE A.3: HIỆU ỨNG NHẤP NHÁY TRẠNG THÁI --- */
         @keyframes blink-flying {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+            50% { opacity: 0.2; /* Để opacity 0.2 thay vì 0 để viền hộp vẫn lờ mờ nhìn thấy được, tạo hiệu ứng mượt hơn */ }
         }
-        .blink-active {
+        .blink-status {
             animation: blink-flying 2s infinite;
         }
 
@@ -184,7 +184,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.1</h2>
+        <h2>RADAR VIEW A.3</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -399,12 +399,11 @@
                 let sClass = "st-c-plan";
                 const upS = sText.toUpperCase();
                 
-                let sttClass = "col-idx";
-                
                 if(upS.includes("LANDED")) sClass = "st-c-done";
                 else if(upS.includes("FLYING") || upS.includes("ACTIVE") || upS.includes("DEPARTED")) {
                     sClass = "st-c-live";
-                    if(upS.includes("FLYING")) sttClass += " blink-active";
+                    // Thêm class nhấp nháy vào thẻ trạng thái
+                    if(upS.includes("FLYING")) sClass += " blink-status";
                 }
                 else if(upS.includes("UNKNOWN") || upS.includes("CANCEL")) sClass = "st-c-unk";
 
@@ -413,7 +412,7 @@
 
                 html += `
                     <tr class="${colorClass}">
-                        <td class="${sttClass}">${globalIndex++}</td>
+                        <td class="col-idx">${globalIndex++}</td>
                         <td><div class="flight-cell"><span class="flight-id">${f.flight || '---'}</span><span class="reg-id">${f.reg || ''}</span></div></td>
                         <td>
                             <div class="route-cell">
