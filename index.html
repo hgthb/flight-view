@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.3</title>
+    <title>RADAR VIEW A.4</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -38,7 +38,7 @@
 
         .input-group {
             display: flex; gap: 5px; margin-bottom: 10px; background: #21262d; padding: 5px; border-radius: 6px; border: 1px solid var(--border);
-            align-items: center; justify-content: center;
+            align-items: center; justify-content: flex-start; /* Changed to allow elements to distribute naturally */
         }
         .input-group input {
             background: #0d1117; border: 1px solid #30363d; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-align: center; font-size: 12px;
@@ -184,7 +184,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.3</h2>
+        <h2>RADAR VIEW A.4</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -195,6 +195,7 @@
         <input type="text" id="v-airport" value="PXU" placeholder="CODE" style="width: 50px; text-transform: uppercase;">
         <input type="date" id="v-date" style="width: 110px;">
         <button id="v-load">XEM</button>
+        <div id="total-flights" style="margin-left: auto; font-size: 12px; font-weight: bold; color: #58a6ff;">Tổng số chuyến bay: 0</div>
     </div>
 
     <div class="table-wrapper">
@@ -231,6 +232,7 @@
     const statusText = document.getElementById('status-text');
     const tableBody = document.getElementById('table-body');
     const limitMsg = document.getElementById('over-limit-msg');
+    const totalFlightsElem = document.getElementById('total-flights');
 
     const today = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
     dateInput.value = today;
@@ -321,10 +323,12 @@
         onValue(dataRef, (snapshot) => {
             if (snapshot.exists()) {
                 const rawFlights = Object.values(snapshot.val());
+                totalFlightsElem.innerText = `Tổng số chuyến bay: ${rawFlights.length}`; // Cập nhật tổng số chuyến
                 renderTable(rawFlights);
                 statusText.innerText = `Online: ${new Date().toLocaleTimeString('vi-VN')}`;
                 dot.className = "status-dot active";
             } else {
+                totalFlightsElem.innerText = `Tổng số chuyến bay: 0`; // Trả về 0 khi không có dữ liệu
                 tableBody.innerHTML = '<tr><td colspan="6" class="empty-msg">No Data.</td></tr>';
                 statusText.innerText = "No Data";
                 dot.className = "status-dot";
