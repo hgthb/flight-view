@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.4</title>
+    <title>RADAR VIEW A.5</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -184,7 +184,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.4</h2>
+        <h2>RADAR VIEW A.5</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -195,7 +195,7 @@
         <input type="text" id="v-airport" value="PXU" placeholder="CODE" style="width: 50px; text-transform: uppercase;">
         <input type="date" id="v-date" style="width: 110px;">
         <button id="v-load">XEM</button>
-        <div id="total-flights" style="margin-left: auto; font-size: 12px; font-weight: bold; color: #58a6ff;">Tổng số chuyến bay: 0</div>
+        <div id="total-flights" style="margin-left: auto; font-size: 13.2px; font-weight: bold; color: #ffffff;">Tổng : 0 chuyến</div>
     </div>
 
     <div class="table-wrapper">
@@ -323,12 +323,12 @@
         onValue(dataRef, (snapshot) => {
             if (snapshot.exists()) {
                 const rawFlights = Object.values(snapshot.val());
-                totalFlightsElem.innerText = `Tổng số chuyến bay: ${rawFlights.length}`; // Cập nhật tổng số chuyến
+                totalFlightsElem.innerText = `Tổng : ${rawFlights.length} chuyến`; // Cập nhật định dạng mới
                 renderTable(rawFlights);
                 statusText.innerText = `Online: ${new Date().toLocaleTimeString('vi-VN')}`;
                 dot.className = "status-dot active";
             } else {
-                totalFlightsElem.innerText = `Tổng số chuyến bay: 0`; // Trả về 0 khi không có dữ liệu
+                totalFlightsElem.innerText = `Tổng : 0 chuyến`; // Trả về 0 khi không có dữ liệu
                 tableBody.innerHTML = '<tr><td colspan="6" class="empty-msg">No Data.</td></tr>';
                 statusText.innerText = "No Data";
                 dot.className = "status-dot";
@@ -406,7 +406,6 @@
                 if(upS.includes("LANDED")) sClass = "st-c-done";
                 else if(upS.includes("FLYING") || upS.includes("ACTIVE") || upS.includes("DEPARTED")) {
                     sClass = "st-c-live";
-                    // Thêm class nhấp nháy vào thẻ trạng thái
                     if(upS.includes("FLYING")) sClass += " blink-status";
                 }
                 else if(upS.includes("UNKNOWN") || upS.includes("CANCEL")) sClass = "st-c-unk";
