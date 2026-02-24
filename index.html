@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.8</title>
+    <title>RADAR VIEW A.9</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -160,7 +160,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.8</h2>
+        <h2>RADAR VIEW A.9</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -208,16 +208,30 @@
     const limitMsg = document.getElementById('over-limit-msg');
     const totalFlightsElem = document.getElementById('total-flights');
 
-    // --- Xử lý hiển thị ngày cho Safari (BFCache) ---
+    // --- A.9 UPDATE: Xử lý hiển thị ngày cho Safari (Tab switching & BFCache) ---
     function setTodayVN() {
         dateInput.value = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
     }
     setTodayVN();
 
+    // Xử lý khi back/forward lại từ trang khác
     window.addEventListener('pageshow', (event) => {
+        const oldDate = dateInput.value;
         setTodayVN();
-        if (event.persisted && airportInput.value) {
+        if ((event.persisted || oldDate !== dateInput.value) && airportInput.value) {
             triggerLoad();
+        }
+    });
+
+    // Xử lý khi chuyển đổi qua lại giữa các tab trên Safari iOS
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            const oldDate = dateInput.value;
+            setTodayVN();
+            // Nếu ngày thực sự thay đổi (so với lúc tab bị ẩn đi) thì tự động load lại dữ liệu
+            if (oldDate !== dateInput.value && airportInput.value) {
+                triggerLoad();
+            }
         }
     });
 
