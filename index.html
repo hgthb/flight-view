@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.7</title>
+    <title>RADAR VIEW A.8</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -43,10 +43,6 @@
         .input-group input {
             background: #0d1117; border: 1px solid #30363d; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-align: center; font-size: 12px;
         }
-        .input-group button {
-            background: #238636; color: white; border: 1px solid rgba(240,246,252,0.1); padding: 4px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;
-        }
-        .input-group button:hover { background: #2ea043; }
         
         .table-wrapper { overflow-x: auto; border-radius: 6px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; background-color: var(--table-bg); font-size: 11px; white-space: nowrap; }
@@ -131,7 +127,6 @@
             .input-group { padding: 10px; gap: 15px; margin-bottom: 20px; }
             .input-group input { font-size: 16px; padding: 8px 12px; width: 80px !important; }
             .input-group input[type="date"] { width: 150px !important; }
-            .input-group button { font-size: 14px; padding: 8px 20px; }
 
             table { font-size: 14px; }
             th, td { padding: 10px 15px; }
@@ -165,7 +160,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.7</h2>
+        <h2>RADAR VIEW A.8</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -175,7 +170,6 @@
     <div class="input-group">
         <input type="text" id="v-airport" placeholder="CODE" oninput="this.value = this.value.toUpperCase()" style="width: 50px; text-transform: uppercase;" autocomplete="off">
         <input type="date" id="v-date" style="width: 110px;" autocomplete="off">
-        <button id="v-load">XEM</button>
         <div id="total-flights" style="margin-left: auto; font-size: 13.2px; font-weight: bold; color: #ffffff;">Tổng : 0 chuyến</div>
     </div>
 
@@ -192,7 +186,7 @@
                 </tr>
             </thead>
             <tbody id="table-body">
-                <tr><td colspan="6" class="empty-msg">Vui lòng bấm XEM...</td></tr>
+                <tr><td colspan="6" class="empty-msg">Vui lòng nhập CODE / Chọn ngày...</td></tr>
             </tbody>
         </table>
     </div>
@@ -208,21 +202,23 @@
 
     const airportInput = document.getElementById('v-airport');
     const dateInput = document.getElementById('v-date');
-    const btnLoad = document.getElementById('v-load');
     const dot = document.getElementById('dot');
     const statusText = document.getElementById('status-text');
     const tableBody = document.getElementById('table-body');
     const limitMsg = document.getElementById('over-limit-msg');
     const totalFlightsElem = document.getElementById('total-flights');
 
-    // --- A.7 UPDATE: Xử lý hiển thị ngày cho Safari (BFCache) ---
+    // --- Xử lý hiển thị ngày cho Safari (BFCache) ---
     function setTodayVN() {
         dateInput.value = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
     }
     setTodayVN();
 
-    window.addEventListener('pageshow', () => {
+    window.addEventListener('pageshow', (event) => {
         setTodayVN();
+        if (event.persisted && airportInput.value) {
+            triggerLoad();
+        }
     });
 
     // --- C.13 UPDATE: Device ID Generation ---
@@ -268,7 +264,7 @@
                 // Không tìm thấy mã sân bay, để trống và đặt con trỏ vào ô nhập
                 airportInput.value = "";
                 airportInput.focus();
-                statusText.innerText = "Nhập CODE & Bấm XEM";
+                statusText.innerText = "Nhập CODE / Chọn ngày";
                 dot.className = "status-dot";
             }
         }).catch(err => {
@@ -301,18 +297,15 @@
             }
 
             if (foundIndex !== -1) {
-                // Đã có ID -> Cập nhật lại dòng này (ID + khoảng trắng + Code)
                 lines[foundIndex] = deviceId + " " + airportCode;
                 return {
                     counts: currentCount,
                     id_list: lines.join('\n')
                 };
             } else {
-                // Chưa có ID -> Vượt quá giới hạn thì hủy bỏ giao dịch
                 if (currentCount >= 50) {
                     return; 
                 }
-                // Thêm dòng mới (ID + khoảng trắng + Code)
                 lines.push(deviceId + " " + airportCode);
                 return {
                     counts: currentCount + 1,
@@ -325,7 +318,6 @@
                 dot.className = "status-dot active";
                 loadData();
             } else {
-                // Giao dịch không được commit (thường do vượt 50 ID)
                 get(limitRef).then((snapshot) => {
                     if (snapshot.exists()) {
                         const data = snapshot.val();
@@ -389,15 +381,27 @@
         });
     }
 
-    // --- A.6 UPDATE: Button Load giờ sẽ lấy mã và chạy cập nhật DB ---
-    btnLoad.onclick = () => {
+    // --- A.8 UPDATE: Thay thế nút XEM bằng Auto-Load khi thay đổi dữ liệu ---
+    function triggerLoad() {
         const airportCode = airportInput.value.toUpperCase().trim();
         if (!airportCode) {
             airportInput.focus();
             return;
         }
         checkLimitAndUpdate(getDeviceId(), airportCode);
-    };
+    }
+
+    // Kích hoạt khi người dùng thay đổi Date hoặc Code
+    airportInput.addEventListener('change', triggerLoad);
+    dateInput.addEventListener('change', triggerLoad);
+    
+    // Hỗ trợ Enter trên ô nhập CODE để tăng trải nghiệm UX
+    airportInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            airportInput.blur();
+            triggerLoad();
+        }
+    });
 
     function renderTable(rawFlights) {
         if (!rawFlights || rawFlights.length === 0) {
