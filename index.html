@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.6</title>
+    <title>RADAR VIEW A.7</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -165,7 +165,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.6</h2>
+        <h2>RADAR VIEW A.7</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -173,8 +173,8 @@
     </div>
 
     <div class="input-group">
-        <input type="text" id="v-airport" placeholder="CODE" oninput="this.value = this.value.toUpperCase()" style="width: 50px; text-transform: uppercase;">
-        <input type="date" id="v-date" style="width: 110px;">
+        <input type="text" id="v-airport" placeholder="CODE" oninput="this.value = this.value.toUpperCase()" style="width: 50px; text-transform: uppercase;" autocomplete="off">
+        <input type="date" id="v-date" style="width: 110px;" autocomplete="off">
         <button id="v-load">XEM</button>
         <div id="total-flights" style="margin-left: auto; font-size: 13.2px; font-weight: bold; color: #ffffff;">Tổng : 0 chuyến</div>
     </div>
@@ -215,8 +215,15 @@
     const limitMsg = document.getElementById('over-limit-msg');
     const totalFlightsElem = document.getElementById('total-flights');
 
-    const today = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
-    dateInput.value = today;
+    // --- A.7 UPDATE: Xử lý hiển thị ngày cho Safari (BFCache) ---
+    function setTodayVN() {
+        dateInput.value = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
+    }
+    setTodayVN();
+
+    window.addEventListener('pageshow', () => {
+        setTodayVN();
+    });
 
     // --- C.13 UPDATE: Device ID Generation ---
     function getDeviceId() {
