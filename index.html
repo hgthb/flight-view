@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.9</title>
+    <title>RADAR VIEW A.10</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -160,7 +160,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.9</h2>
+        <h2>RADAR VIEW A.10</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -169,7 +169,7 @@
 
     <div class="input-group">
         <input type="text" id="v-airport" placeholder="CODE" oninput="this.value = this.value.toUpperCase()" style="width: 50px; text-transform: uppercase;" autocomplete="off">
-        <input type="date" id="v-date" style="width: 110px;" autocomplete="off">
+        <input type="date" id="v-date" style="width: 110px;">
         <div id="total-flights" style="margin-left: auto; font-size: 13.2px; font-weight: bold; color: #ffffff;">Tổng : 0 chuyến</div>
     </div>
 
@@ -208,17 +208,28 @@
     const limitMsg = document.getElementById('over-limit-msg');
     const totalFlightsElem = document.getElementById('total-flights');
 
-    // --- A.9 UPDATE: Xử lý hiển thị ngày cho Safari (Tab switching & BFCache) ---
-    function setTodayVN() {
-        dateInput.value = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
+    // --- A.10 UPDATE: Xử lý an toàn hiển thị ngày cho Safari (Chống đơ Picker) ---
+    function setTodayVNSafe() {
+        // Kiểm tra an toàn: Nếu người dùng đang focus vào ô chọn ngày, KHÔNG đổi ngày để tránh lỗi đơ Safari
+        if (document.activeElement === dateInput) return false;
+
+        const newDate = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
+        const oldDate = dateInput.value;
+
+        if (oldDate !== newDate) {
+            dateInput.value = newDate;
+            return true; // Báo hiệu ngày đã được cập nhật
+        }
+        return false;
     }
-    setTodayVN();
+
+    // Set lần đầu khi trang vừa load xong
+    dateInput.value = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
 
     // Xử lý khi back/forward lại từ trang khác
     window.addEventListener('pageshow', (event) => {
-        const oldDate = dateInput.value;
-        setTodayVN();
-        if ((event.persisted || oldDate !== dateInput.value) && airportInput.value) {
+        const isChanged = setTodayVNSafe();
+        if ((event.persisted || isChanged) && airportInput.value) {
             triggerLoad();
         }
     });
@@ -226,10 +237,8 @@
     // Xử lý khi chuyển đổi qua lại giữa các tab trên Safari iOS
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
-            const oldDate = dateInput.value;
-            setTodayVN();
-            // Nếu ngày thực sự thay đổi (so với lúc tab bị ẩn đi) thì tự động load lại dữ liệu
-            if (oldDate !== dateInput.value && airportInput.value) {
+            const isChanged = setTodayVNSafe();
+            if (isChanged && airportInput.value) {
                 triggerLoad();
             }
         }
@@ -257,11 +266,9 @@
                 const rawList = (typeof data === 'number') ? "" : (data.id_list || "");
                 const idArray = rawList.split('\n').filter(l => l.trim() !== '');
                 
-                // Tìm dòng chứa deviceId
                 for (let line of idArray) {
                     if (line.startsWith(deviceId)) {
                         const parts = line.split(' ');
-                        // Nếu có mã IATA đi liền sau
                         if (parts.length > 1 && parts[1].trim() !== "") {
                             foundCode = parts[1].trim();
                         }
@@ -271,11 +278,9 @@
             }
             
             if (foundCode) {
-                // Đã tìm thấy mã sân bay, gán vào ô input và tiến hành xác thực/tải dữ liệu
                 airportInput.value = foundCode;
                 checkLimitAndUpdate(deviceId, foundCode);
             } else {
-                // Không tìm thấy mã sân bay, để trống và đặt con trỏ vào ô nhập
                 airportInput.value = "";
                 airportInput.focus();
                 statusText.innerText = "Nhập CODE / Chọn ngày";
