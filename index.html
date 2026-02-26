@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.10</title>
+    <title>RADAR VIEW A.11</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -103,8 +103,13 @@
         .t-est { color: #fef08a; font-weight: bold; }
         .t-real { color: #00ff00; font-weight: 900; }
         
-        .status-cell { font-weight: bold; font-size: 0.85em; }
-        .st-box { padding: 2px 4px; border-radius: 3px; display: flex; gap: 3px; text-transform: uppercase; font-size: 9px; align-items: center; width: fit-content; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); }
+        /* A.11 UPDATE: Cho phép văn bản bọc dòng ở cột STT */
+        .status-cell { font-weight: bold; font-size: 0.85em; white-space: normal; }
+        .st-box { 
+            padding: 4px; border-radius: 3px; display: flex; flex-wrap: wrap; justify-content: center; text-align: center;
+            gap: 3px; text-transform: uppercase; font-size: 9px; align-items: center; min-width: 65px; 
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); line-height: 1.3;
+        }
         
         .st-c-plan { background: #334155; color: #ffffff; }
         .st-c-live { background: #00ffff; color: #000000; font-weight: 900; box-shadow: 0 0 5px #00ffff; }
@@ -160,7 +165,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.10</h2>
+        <h2>RADAR VIEW A.11</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -496,8 +501,8 @@
                 }
                 else if(upS.includes("UNKNOWN") || upS.includes("CANCEL")) sClass = "st-c-unk";
 
-                let shortStatus = sText;
-                if(shortStatus.length > 8) shortStatus = shortStatus.substring(0, 8);
+                // A.11 UPDATE: Bỏ lệnh cắt chuỗi (substring) để hiển thị toàn bộ nội dung trạng thái
+                let fullStatus = sText;
 
                 html += `
                     <tr class="${colorClass}">
@@ -515,7 +520,7 @@
                         <td><div class="time-box">${depContent || '--:--'}</div></td>
                         <td><div class="time-box">${arrContent || '--:--'}</div></td>
                         <td class="status-cell">
-                            <span class="st-box ${sClass}">${sIcon} ${shortStatus}</span>
+                            <span class="st-box ${sClass}">${sIcon} ${fullStatus}</span>
                         </td>
                     </tr>`;
             });
