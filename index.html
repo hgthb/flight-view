@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.11</title>
+    <title>RADAR VIEW A.12</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -116,6 +116,17 @@
         .st-c-done { background: #16a34a; color: #ffffff; }
         .st-c-unk { background: #4b5563; color: #e5e7eb; }
 
+        /* A.12 UPDATE: CSS cho chữ vàng nhấp nháy liên tục */
+        @keyframes text-blink-yellow {
+            0%, 100% { color: #ffff00; text-shadow: 0 0 10px #ffff00; opacity: 1; }
+            50% { color: #ffff00; text-shadow: none; opacity: 0.4; }
+        }
+        .st-yellow-blink {
+            animation: text-blink-yellow 0.8s infinite !important;
+            font-weight: 900 !important;
+            color: #ffff00 !important;
+        }
+
         .empty-msg { text-align: center; padding: 15px; color: #8b949e; font-style: italic; }
         
         #over-limit-msg { 
@@ -165,7 +176,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.11</h2>
+        <h2>RADAR VIEW A.12</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -501,6 +512,12 @@
                 }
                 else if(upS.includes("UNKNOWN") || upS.includes("CANCEL")) sClass = "st-c-unk";
 
+                // A.12 UPDATE: Thêm class nhấp nháy chữ màu vàng nếu chứa LC-IN hoặc L-BD
+                let extraClass = "";
+                if(upS.includes("LC-IN") || upS.includes("L-BD")) {
+                    extraClass = "st-yellow-blink";
+                }
+
                 // A.11 UPDATE: Bỏ lệnh cắt chuỗi (substring) để hiển thị toàn bộ nội dung trạng thái
                 let fullStatus = sText;
 
@@ -520,7 +537,7 @@
                         <td><div class="time-box">${depContent || '--:--'}</div></td>
                         <td><div class="time-box">${arrContent || '--:--'}</div></td>
                         <td class="status-cell">
-                            <span class="st-box ${sClass}">${sIcon} ${fullStatus}</span>
+                            <span class="st-box ${sClass} ${extraClass}">${sIcon} ${fullStatus}</span>
                         </td>
                     </tr>`;
             });
