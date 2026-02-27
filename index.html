@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.13</title>
+    <title>RADAR VIEW A.14</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -128,6 +128,19 @@
             border: 1px solid #000000 !important;
         }
 
+        /* A.14 UPDATE: CSS cho chữ đỏ nhấp nháy liên tục trên nền trắng có viền đen */
+        @keyframes text-blink-red {
+            0%, 100% { color: #ff0000; text-shadow: 0 0 8px #ff0000, 1px 1px 1px #000000; opacity: 1; }
+            50% { color: #ff0000; text-shadow: 1px 1px 1px #000000; opacity: 0.4; }
+        }
+        .st-red-blink {
+            animation: text-blink-red 0.8s infinite !important;
+            font-weight: 900 !important;
+            color: #ff0000 !important;
+            background-color: #ffffff !important;
+            border: 1px solid #000000 !important;
+        }
+
         .empty-msg { text-align: center; padding: 15px; color: #8b949e; font-style: italic; }
         
         #over-limit-msg { 
@@ -177,7 +190,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.13</h2>
+        <h2>RADAR VIEW A.14</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -513,10 +526,12 @@
                 }
                 else if(upS.includes("UNKNOWN") || upS.includes("CANCEL")) sClass = "st-c-unk";
 
-                // A.13 UPDATE: Thêm class nhấp nháy chữ màu vàng nếu chứa LC-IN hoặc L-BD
+                // A.14 UPDATE: Thêm class nhấp nháy theo trạng thái
                 let extraClass = "";
                 if(upS.includes("LC-IN") || upS.includes("L-BD")) {
                     extraClass = "st-yellow-blink";
+                } else if(upS.includes("G-CL")) {
+                    extraClass = "st-red-blink";
                 }
 
                 let fullStatus = sText;
