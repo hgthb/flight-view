@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.12</title>
+    <title>RADAR VIEW A.13</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -103,7 +103,6 @@
         .t-est { color: #fef08a; font-weight: bold; }
         .t-real { color: #00ff00; font-weight: 900; }
         
-        /* A.11 UPDATE: Cho phép văn bản bọc dòng ở cột STT */
         .status-cell { font-weight: bold; font-size: 0.85em; white-space: normal; }
         .st-box { 
             padding: 4px; border-radius: 3px; display: flex; flex-wrap: wrap; justify-content: center; text-align: center;
@@ -116,15 +115,17 @@
         .st-c-done { background: #16a34a; color: #ffffff; }
         .st-c-unk { background: #4b5563; color: #e5e7eb; }
 
-        /* A.12 UPDATE: CSS cho chữ vàng nhấp nháy liên tục */
+        /* A.13 UPDATE: CSS cho chữ vàng nhấp nháy liên tục trên nền trắng có viền đen */
         @keyframes text-blink-yellow {
-            0%, 100% { color: #ffff00; text-shadow: 0 0 10px #ffff00; opacity: 1; }
-            50% { color: #ffff00; text-shadow: none; opacity: 0.4; }
+            0%, 100% { color: #ffff00; text-shadow: 0 0 8px #ffff00, 1px 1px 1px #000000; opacity: 1; }
+            50% { color: #ffff00; text-shadow: 1px 1px 1px #000000; opacity: 0.4; }
         }
         .st-yellow-blink {
             animation: text-blink-yellow 0.8s infinite !important;
             font-weight: 900 !important;
             color: #ffff00 !important;
+            background-color: #ffffff !important;
+            border: 1px solid #000000 !important;
         }
 
         .empty-msg { text-align: center; padding: 15px; color: #8b949e; font-style: italic; }
@@ -176,7 +177,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.12</h2>
+        <h2>RADAR VIEW A.13</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -512,13 +513,12 @@
                 }
                 else if(upS.includes("UNKNOWN") || upS.includes("CANCEL")) sClass = "st-c-unk";
 
-                // A.12 UPDATE: Thêm class nhấp nháy chữ màu vàng nếu chứa LC-IN hoặc L-BD
+                // A.13 UPDATE: Thêm class nhấp nháy chữ màu vàng nếu chứa LC-IN hoặc L-BD
                 let extraClass = "";
                 if(upS.includes("LC-IN") || upS.includes("L-BD")) {
                     extraClass = "st-yellow-blink";
                 }
 
-                // A.11 UPDATE: Bỏ lệnh cắt chuỗi (substring) để hiển thị toàn bộ nội dung trạng thái
                 let fullStatus = sText;
 
                 html += `
