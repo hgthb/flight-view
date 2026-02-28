@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.14</title>
+    <title>RADAR VIEW A.15</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -115,30 +115,32 @@
         .st-c-done { background: #16a34a; color: #ffffff; }
         .st-c-unk { background: #4b5563; color: #e5e7eb; }
 
-        /* A.13 UPDATE: CSS cho chữ vàng nhấp nháy liên tục trên nền trắng có viền đen */
-        @keyframes text-blink-yellow {
-            0%, 100% { color: #ffff00; text-shadow: 0 0 8px #ffff00, 1px 1px 1px #000000; opacity: 1; }
-            50% { color: #ffff00; text-shadow: 1px 1px 1px #000000; opacity: 0.4; }
-        }
-        .st-yellow-blink {
-            animation: text-blink-yellow 0.8s infinite !important;
-            font-weight: 900 !important;
-            color: #ffff00 !important;
-            background-color: #ffffff !important;
-            border: 1px solid #000000 !important;
+        /* A.15 UPDATE: Hiệu ứng nhấp nháy chung (thay đổi độ sáng/mờ để tránh nhòe chữ) */
+        @keyframes text-blink-status {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.25; }
         }
 
-        /* A.14 UPDATE: CSS cho chữ đỏ nhấp nháy liên tục trên nền trắng có viền đen */
-        @keyframes text-blink-red {
-            0%, 100% { color: #ff0000; text-shadow: 0 0 8px #ff0000, 1px 1px 1px #000000; opacity: 1; }
-            50% { color: #ff0000; text-shadow: 1px 1px 1px #000000; opacity: 0.4; }
+        /* A.15 UPDATE: LC-IN / L-BD -> Chữ vàng đậm (tinh chỉnh để rõ trên nền trắng), nền trắng viền đen, không đổ bóng */
+        .st-yellow-blink {
+            animation: text-blink-status 0.8s infinite !important;
+            font-weight: 900 !important;
+            color: #d9a000 !important; 
+            background-color: #ffffff !important;
+            border: 1px solid #000000 !important;
+            text-shadow: none !important;
+            box-shadow: none !important;
         }
+
+        /* A.15 UPDATE: G-CL -> Chữ đỏ đậm, nền trắng viền đen, không đổ bóng */
         .st-red-blink {
-            animation: text-blink-red 0.8s infinite !important;
+            animation: text-blink-status 0.8s infinite !important;
             font-weight: 900 !important;
             color: #ff0000 !important;
             background-color: #ffffff !important;
             border: 1px solid #000000 !important;
+            text-shadow: none !important;
+            box-shadow: none !important;
         }
 
         .empty-msg { text-align: center; padding: 15px; color: #8b949e; font-style: italic; }
@@ -190,7 +192,7 @@
 
 <div class="container">
     <div class="header">
-        <h2>RADAR VIEW A.14</h2>
+        <h2>RADAR VIEW A.15</h2>
         <div id="status-bar">
             <span class="status-dot" id="dot"></span>
             <span id="status-text">Checking...</span>
@@ -240,7 +242,6 @@
 
     // --- A.10 UPDATE: Xử lý an toàn hiển thị ngày cho Safari (Chống đơ Picker) ---
     function setTodayVNSafe() {
-        // Kiểm tra an toàn: Nếu người dùng đang focus vào ô chọn ngày, KHÔNG đổi ngày để tránh lỗi đơ Safari
         if (document.activeElement === dateInput) return false;
 
         const newDate = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
@@ -248,15 +249,13 @@
 
         if (oldDate !== newDate) {
             dateInput.value = newDate;
-            return true; // Báo hiệu ngày đã được cập nhật
+            return true; 
         }
         return false;
     }
 
-    // Set lần đầu khi trang vừa load xong
     dateInput.value = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
 
-    // Xử lý khi back/forward lại từ trang khác
     window.addEventListener('pageshow', (event) => {
         const isChanged = setTodayVNSafe();
         if ((event.persisted || isChanged) && airportInput.value) {
@@ -264,7 +263,6 @@
         }
     });
 
-    // Xử lý khi chuyển đổi qua lại giữa các tab trên Safari iOS
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
             const isChanged = setTodayVNSafe();
@@ -440,11 +438,9 @@
         checkLimitAndUpdate(getDeviceId(), airportCode);
     }
 
-    // Kích hoạt khi người dùng thay đổi Date hoặc Code
     airportInput.addEventListener('change', triggerLoad);
     dateInput.addEventListener('change', triggerLoad);
     
-    // Hỗ trợ Enter trên ô nhập CODE để tăng trải nghiệm UX
     airportInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             airportInput.blur();
@@ -526,7 +522,7 @@
                 }
                 else if(upS.includes("UNKNOWN") || upS.includes("CANCEL")) sClass = "st-c-unk";
 
-                // A.14 UPDATE: Thêm class nhấp nháy theo trạng thái
+                // A.15 UPDATE: Thêm class nhấp nháy theo trạng thái
                 let extraClass = "";
                 if(upS.includes("LC-IN") || upS.includes("L-BD")) {
                     extraClass = "st-yellow-blink";
@@ -560,7 +556,6 @@
         tableBody.innerHTML = html;
     }
 
-    // Khởi chạy App ban đầu
     initApp();
 
 </script>
