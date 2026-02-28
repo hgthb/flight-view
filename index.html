@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.17</title>
+    <title>RADAR VIEW A.18</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -170,6 +170,17 @@
             box-shadow: none !important;
         }
 
+        /* --- CLASS MỚI CHO A.18 --- */
+        .st-urgent-blink {
+            animation: text-blink-status 0.8s infinite !important;
+            font-weight: 900 !important;
+            color: #ff0000 !important; 
+            background-color: #ffffff !important;
+            border: 1px solid #0000ff !important;
+            text-shadow: none !important;
+            box-shadow: none !important;
+        }
+
         .empty-msg { text-align: center; padding: 15px; color: #8b949e; font-style: italic; }
         
         #over-limit-msg { 
@@ -221,7 +232,7 @@
 <div class="container">
     <div class="header">
         <div class="title-group">
-            <h2>RADAR VIEW A.17</h2>
+            <h2>RADAR VIEW A.18</h2>
             <button id="btn-export-pdf" title="Xuất danh sách ra PDF">PDF</button>
         </div>
         <div id="status-bar">
@@ -274,13 +285,11 @@
     const totalFlightsElem = document.getElementById('total-flights');
     const btnExportPdf = document.getElementById('btn-export-pdf');
 
-    // --- A.17 UPDATE: Hàm xử lý xuất PDF (Khổ portrait và thêm header) ---
     btnExportPdf.addEventListener('click', () => {
         const targetElement = document.getElementById('pdf-target');
         const code = airportInput.value || "UNKNOWN";
         const date = dateInput.value || "Date";
         
-        // Hiển thị thông tin header ngày
         const pdfHeader = document.getElementById('pdf-date-header');
         if (pdfHeader) {
             const dateParts = date.split('-');
@@ -294,18 +303,18 @@
             filename:     `Radar_${code}_${date}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0d1117' },
-            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' } // Đã đổi sang portrait
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' } 
         };
         
         btnExportPdf.innerText = "Đang xử lý...";
         
         html2pdf().set(opt).from(targetElement).save().then(() => {
             btnExportPdf.innerText = "PDF";
-            if (pdfHeader) pdfHeader.style.display = 'none'; // Ẩn header sau khi xuất
+            if (pdfHeader) pdfHeader.style.display = 'none'; 
         }).catch(err => {
             console.error("Lỗi xuất PDF:", err);
             btnExportPdf.innerText = "Lỗi PDF";
-            if (pdfHeader) pdfHeader.style.display = 'none'; // Ẩn header nếu lỗi
+            if (pdfHeader) pdfHeader.style.display = 'none'; 
             setTimeout(() => { btnExportPdf.innerText = "PDF"; }, 2000);
         });
     });
@@ -587,8 +596,11 @@
                 }
                 else if(upS.includes("UNKNOWN") || upS.includes("CANCEL")) sClass = "st-c-unk";
 
+                // --- XỬ LÝ LỌC TRẠNG THÁI KHẨN CẤP CHO A.18 ---
                 let extraClass = "";
-                if(upS.includes("LC-IN") || upS.includes("L-BD")) {
+                if(upS.includes("LAST BOARDING") || upS.includes("LAST CHECK-IN") || upS.includes("GATE CLOSED")) {
+                    extraClass = "st-urgent-blink";
+                } else if(upS.includes("LC-IN") || upS.includes("L-BD")) {
                     extraClass = "st-yellow-blink";
                 } else if(upS.includes("G-CL")) {
                     extraClass = "st-red-blink";
