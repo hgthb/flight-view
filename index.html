@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.19</title>
+    <title>RADAR VIEW A.20</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -180,7 +180,6 @@
             box-shadow: none !important;
         }
 
-        /* --- CLASS MỚI CHO A.19 --- */
         .st-red-blue-border {
             font-weight: 900 !important;
             color: #ff0000 !important; 
@@ -241,7 +240,7 @@
 <div class="container">
     <div class="header">
         <div class="title-group">
-            <h2>RADAR VIEW A.19</h2>
+            <h2>RADAR VIEW A.20</h2>
             <button id="btn-export-pdf" title="Xuất danh sách ra PDF">PDF</button>
         </div>
         <div id="status-bar">
@@ -605,11 +604,11 @@
                 }
                 else if(upS.includes("UNKNOWN") || upS.includes("CANCEL")) sClass = "st-c-unk";
 
-                // --- XỬ LÝ LỌC TRẠNG THÁI KHẨN CẤP CHO A.19 ---
+                // --- XỬ LÝ LỌC TRẠNG THÁI KHẨN CẤP CHO A.20 ---
                 let extraClass = "";
                 if(upS.includes("LAST BOARDING") || upS.includes("LAST CHECK-IN") || upS.includes("GATE CLOSED")) {
                     extraClass = "st-urgent-blink";
-                } else if(upS.includes("BOARDING") || upS.includes("CHECK-IN")) {
+                } else if(!upS.includes("SCHEDULED") && !upS.includes("FLYING") && !upS.includes("LANDED")) {
                     extraClass = "st-red-blue-border";
                 } else if(upS.includes("LC-IN") || upS.includes("L-BD")) {
                     extraClass = "st-yellow-blink";
