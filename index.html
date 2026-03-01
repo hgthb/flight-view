@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.20</title>
+    <title>RADAR VIEW A.21</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -124,12 +124,13 @@
         .t-est { color: #fef08a; font-weight: bold; }
         .t-real { color: #00ff00; font-weight: 900; }
         
+        /* --- CHỈNH SỬA CHO A.21 --- */
         .status-cell { 
             font-weight: bold; 
             font-size: 0.85em; 
             white-space: normal !important; 
             word-wrap: break-word; 
-            min-width: 100px;
+            min-width: 75px; /* Giảm từ 100px để tránh bị lấp trên màn hình hẹp */
         }
         
         .st-box { 
@@ -240,7 +241,7 @@
 <div class="container">
     <div class="header">
         <div class="title-group">
-            <h2>RADAR VIEW A.20</h2>
+            <h2>RADAR VIEW A.21</h2>
             <button id="btn-export-pdf" title="Xuất danh sách ra PDF">PDF</button>
         </div>
         <div id="status-bar">
@@ -604,7 +605,6 @@
                 }
                 else if(upS.includes("UNKNOWN") || upS.includes("CANCEL")) sClass = "st-c-unk";
 
-                // --- XỬ LÝ LỌC TRẠNG THÁI KHẨN CẤP CHO A.20 ---
                 let extraClass = "";
                 if(upS.includes("LAST BOARDING") || upS.includes("LAST CHECK-IN") || upS.includes("GATE CLOSED")) {
                     extraClass = "st-urgent-blink";
