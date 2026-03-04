@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0d1117">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/784/784867.png">
     <title>RADAR VIEW A.21</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -124,13 +130,12 @@
         .t-est { color: #fef08a; font-weight: bold; }
         .t-real { color: #00ff00; font-weight: 900; }
         
-        /* --- CHỈNH SỬA CHO A.21 --- */
         .status-cell { 
             font-weight: bold; 
             font-size: 0.85em; 
             white-space: normal !important; 
             word-wrap: break-word; 
-            min-width: 75px; /* Giảm từ 100px để tránh bị lấp trên màn hình hẹp */
+            min-width: 75px;
         }
         
         .st-box { 
@@ -646,5 +651,14 @@
 
 </script>
 
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Radar A.21: PWA Ready!'))
+                .catch(err => console.log('PWA Error:', err));
+        });
+    }
+</script>
 </body>
 </html>
