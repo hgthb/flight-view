@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW A.23</title>
+    <title>RADAR VIEW V.79</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -130,7 +130,7 @@
             font-size: 0.85em; 
             white-space: normal !important; 
             word-wrap: break-word; 
-            min-width: 75px; /* Giảm từ 100px để tránh bị lấp trên màn hình hẹp */
+            min-width: 75px; 
         }
         
         .st-box { 
@@ -241,7 +241,7 @@
 <div class="container">
     <div class="header">
         <div class="title-group">
-            <h2>RADAR VIEW A.23</h2>
+            <h2>RADAR VIEW V.79</h2>
             <button id="btn-export-pdf" title="Xuất danh sách ra PDF">PDF</button>
         </div>
         <div id="status-bar">
@@ -499,13 +499,11 @@
         onValue(dataRef, (snapshot) => {
             if (snapshot.exists()) {
                 const rawFlights = Object.values(snapshot.val());
-                // A.22 Update: Total Flts Text
                 totalFlightsElem.innerText = `Total: ${rawFlights.length} flts`; 
                 renderTable(rawFlights);
                 statusText.innerText = `Online: ${new Date().toLocaleTimeString('vi-VN')}`;
                 dot.className = "status-dot active";
             } else {
-                // A.22 Update: Total Flts Text
                 totalFlightsElem.innerText = `Total: 0 flts`; 
                 tableBody.innerHTML = '<tr><td colspan="6" class="empty-msg">No Data.</td></tr>';
                 statusText.innerText = "No Data";
@@ -576,7 +574,6 @@
             const colorClass = group.length > 1 ? (pIdx++ % 2 === 0 ? "pair-blue" : "pair-brown") : "standalone";
 
             group.forEach(f => {
-                // A.22 Update: ARR and DEP
                 const typeLabel = f.type === 'arr' ? 'ARR' : 'DEP';
                 const typeClass = f.type === 'arr' ? 'pill-arr' : 'pill-dep';
                 const durationHtml = f.duration ? `<span class="duration-text">|⏳${f.duration}</span>` : '';
