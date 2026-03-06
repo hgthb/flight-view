@@ -3,13 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#0d1117">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/784/784867.png">
-    <title>RADAR VIEW A.21</title>
+    <title>RADAR VIEW A.22</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -130,12 +124,13 @@
         .t-est { color: #fef08a; font-weight: bold; }
         .t-real { color: #00ff00; font-weight: 900; }
         
+        /* --- CHỈNH SỬA CHO A.21 --- */
         .status-cell { 
             font-weight: bold; 
             font-size: 0.85em; 
             white-space: normal !important; 
             word-wrap: break-word; 
-            min-width: 75px;
+            min-width: 75px; /* Giảm từ 100px để tránh bị lấp trên màn hình hẹp */
         }
         
         .st-box { 
@@ -246,7 +241,7 @@
 <div class="container">
     <div class="header">
         <div class="title-group">
-            <h2>RADAR VIEW A.21</h2>
+            <h2>RADAR VIEW A.22</h2>
             <button id="btn-export-pdf" title="Xuất danh sách ra PDF">PDF</button>
         </div>
         <div id="status-bar">
@@ -258,7 +253,7 @@
     <div class="input-group">
         <input type="text" id="v-airport" placeholder="CODE" oninput="this.value = this.value.toUpperCase()" style="width: 50px; text-transform: uppercase;" autocomplete="off">
         <input type="date" id="v-date" style="width: 110px;">
-        <div id="total-flights" style="margin-left: auto; font-size: 13.2px; font-weight: bold; color: #ffffff;">Tổng : 0 chuyến</div>
+        <div id="total-flights" style="margin-left: auto; font-size: 13.2px; font-weight: bold; color: #ffffff;">Total: 0 flts</div>
     </div>
 
     <div class="table-wrapper" id="pdf-target">
@@ -268,8 +263,8 @@
             <thead>
                 <tr>
                     <th class="col-idx">#</th>
-                    <th>Chuyến</th>
-                    <th>Lộ trình</th>
+                    <th>FLIGHT</th>
+                    <th>ROUTE</th>
                     <th>Dep</th>
                     <th>Arr</th>
                     <th>Stt</th>
@@ -504,12 +499,14 @@
         onValue(dataRef, (snapshot) => {
             if (snapshot.exists()) {
                 const rawFlights = Object.values(snapshot.val());
-                totalFlightsElem.innerText = `Tổng : ${rawFlights.length} chuyến`; 
+                // A.22 Update: Total Flts Text
+                totalFlightsElem.innerText = `Total: ${rawFlights.length} flts`; 
                 renderTable(rawFlights);
                 statusText.innerText = `Online: ${new Date().toLocaleTimeString('vi-VN')}`;
                 dot.className = "status-dot active";
             } else {
-                totalFlightsElem.innerText = `Tổng : 0 chuyến`; 
+                // A.22 Update: Total Flts Text
+                totalFlightsElem.innerText = `Total: 0 flts`; 
                 tableBody.innerHTML = '<tr><td colspan="6" class="empty-msg">No Data.</td></tr>';
                 statusText.innerText = "No Data";
                 dot.className = "status-dot";
@@ -579,7 +576,8 @@
             const colorClass = group.length > 1 ? (pIdx++ % 2 === 0 ? "pair-blue" : "pair-brown") : "standalone";
 
             group.forEach(f => {
-                const typeLabel = f.type === 'arr' ? 'ĐẾN' : 'ĐI';
+                // A.22 Update: ARR and DEP
+                const typeLabel = f.type === 'arr' ? 'ARR' : 'DEP';
                 const typeClass = f.type === 'arr' ? 'pill-arr' : 'pill-dep';
                 const durationHtml = f.duration ? `<span class="duration-text">|⏳${f.duration}</span>` : '';
 
@@ -651,14 +649,5 @@
 
 </script>
 
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Radar A.21: PWA Ready!'))
-                .catch(err => console.log('PWA Error:', err));
-        });
-    }
-</script>
 </body>
 </html>
