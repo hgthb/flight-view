@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW V.79</title>
+    <title>RADAR VIEW F.80</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -65,7 +65,7 @@
             background: #0d1117; border: 1px solid #30363d; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-align: center; font-size: 12px;
         }
         
-        .table-wrapper { overflow-x: auto; border-radius: 6px; border: 1px solid var(--border); }
+        .table-wrapper { overflow-x: auto; border-radius: 6px; border: 1px solid var(--border); min-height: 60vh; touch-action: pan-y; }
         table { width: 100%; border-collapse: collapse; background-color: var(--table-bg); font-size: 11px; white-space: nowrap; }
         
         th, td { padding: 4px 2px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
@@ -241,7 +241,7 @@
 <div class="container">
     <div class="header">
         <div class="title-group">
-            <h2>RADAR VIEW V.79</h2>
+            <h2>RADAR VIEW F.80</h2>
             <button id="btn-export-pdf" title="Xuất danh sách ra PDF">PDF</button>
         </div>
         <div id="status-bar">
@@ -641,6 +641,46 @@
         });
         tableBody.innerHTML = html;
     }
+
+    // --- BỔ SUNG LOGIC VUỐT (SWIPE) CHUYỂN NGÀY ---
+    const touchZone = document.getElementById('pdf-target');
+    let touchstartX = 0;
+    let touchstartY = 0;
+    const swipeThreshold = 50;
+
+    touchZone.addEventListener('touchstart', (e) => {
+        touchstartX = e.changedTouches[0].screenX;
+        touchstartY = e.changedTouches[0].screenY;
+    }, {passive: true});
+
+    touchZone.addEventListener('touchend', (e) => {
+        let touchendX = e.changedTouches[0].screenX;
+        let touchendY = e.changedTouches[0].screenY;
+        
+        let deltaX = touchendX - touchstartX;
+        let deltaY = touchendY - touchstartY;
+
+        // Ưu tiên vuốt ngang hơn vuốt dọc và độ dài vuốt phải lớn hơn ngưỡng 50px
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
+            let currentDate = new Date(dateInput.value);
+            const todayStr = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
+            
+            if (deltaX < 0) {
+                // Vuốt trái -> Tiến tới (Next Day) - Chặn ở ngày hiện tại
+                if (dateInput.value < todayStr) {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    dateInput.value = currentDate.toISOString().split('T')[0];
+                    triggerLoad();
+                }
+            } else {
+                // Vuốt phải -> Lùi lại (Prev Day) - Không chặn
+                currentDate.setDate(currentDate.getDate() - 1);
+                dateInput.value = currentDate.toISOString().split('T')[0];
+                triggerLoad();
+            }
+        }
+    }, {passive: true});
+    // ---------------------------------------------
 
     initApp();
 
