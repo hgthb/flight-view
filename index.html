@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADAR VIEW F.80</title>
+    <title>RADAR VIEW F.81</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -23,6 +23,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow-x: hidden; /* Ngăn xuất hiện thanh cuộn ngang khi trượt bảng */
         }
 
         .container { width: 100%; max-width: 1000px; }
@@ -124,7 +125,6 @@
         .t-est { color: #fef08a; font-weight: bold; }
         .t-real { color: #00ff00; font-weight: 900; }
         
-        /* --- CHỈNH SỬA CHO A.21 --- */
         .status-cell { 
             font-weight: bold; 
             font-size: 0.85em; 
@@ -241,7 +241,7 @@
 <div class="container">
     <div class="header">
         <div class="title-group">
-            <h2>RADAR VIEW F.80</h2>
+            <h2>RADAR VIEW F.81</h2>
             <button id="btn-export-pdf" title="Xuất danh sách ra PDF">PDF</button>
         </div>
         <div id="status-bar">
@@ -483,8 +483,6 @@
         });
     }
 
-    let currentListener = null;
-
     function loadData() {
         const airport = airportInput.value.toUpperCase().trim();
         const date = dateInput.value;
@@ -642,44 +640,106 @@
         tableBody.innerHTML = html;
     }
 
-    // --- BỔ SUNG LOGIC VUỐT (SWIPE) CHUYỂN NGÀY ---
+    // --- BỔ SUNG LOGIC VUỐT (SWIPE) HIỆU ỨNG TRƯỢT THEO NGÓN TAY ---
     const touchZone = document.getElementById('pdf-target');
     let touchstartX = 0;
     let touchstartY = 0;
-    const swipeThreshold = 50;
+    let currentTranslate = 0;
+    let isDragging = false;
+    const swipeThreshold = 70; // Ngưỡng trượt để sang trang (px)
 
     touchZone.addEventListener('touchstart', (e) => {
         touchstartX = e.changedTouches[0].screenX;
         touchstartY = e.changedTouches[0].screenY;
+        isDragging = true;
+        touchZone.style.transition = 'none'; // Tắt hiệu ứng trượt mượt để bảng bám sát ngón tay
+    }, {passive: true});
+
+    touchZone.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        let currentX = e.changedTouches[0].screenX;
+        let currentY = e.changedTouches[0].screenY;
+        let deltaX = currentX - touchstartX;
+        let deltaY = currentY - touchstartY;
+
+        // Nếu vuốt dọc nhiều hơn ngang (cuộn trang) thì hủy kéo bảng
+        if (Math.abs(deltaY) > Math.abs(deltaX)) {
+            isDragging = false;
+            touchZone.style.transform = `translateX(0px)`;
+            return;
+        }
+
+        let currentDateStr = dateInput.value;
+        const todayStr = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
+        
+        // Hiệu ứng "dây thun" (chống cự) nếu cố vuốt sang ngày mai
+        if (deltaX < 0 && currentDateStr >= todayStr) {
+            deltaX = deltaX * 0.2; 
+        }
+
+        currentTranslate = deltaX;
+        touchZone.style.transform = `translateX(${currentTranslate}px)`;
     }, {passive: true});
 
     touchZone.addEventListener('touchend', (e) => {
-        let touchendX = e.changedTouches[0].screenX;
-        let touchendY = e.changedTouches[0].screenY;
+        if (!isDragging) return;
+        isDragging = false;
         
-        let deltaX = touchendX - touchstartX;
-        let deltaY = touchendY - touchstartY;
+        touchZone.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out'; // Bật lại hiệu ứng mượt khi nhấc tay
 
-        // Ưu tiên vuốt ngang hơn vuốt dọc và độ dài vuốt phải lớn hơn ngưỡng 50px
-        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
+        // Kiểm tra xem đã vượt ngưỡng để chuyển ngày chưa
+        if (Math.abs(currentTranslate) > swipeThreshold) {
             let currentDate = new Date(dateInput.value);
             const todayStr = new Date(new Date().getTime() + 7*60*60*1000).toISOString().split('T')[0];
             
-            if (deltaX < 0) {
-                // Vuốt trái -> Tiến tới (Next Day) - Chặn ở ngày hiện tại
+            if (currentTranslate < 0) {
+                // Vuốt trái -> Tiến tới (Next Day)
                 if (dateInput.value < todayStr) {
-                    currentDate.setDate(currentDate.getDate() + 1);
-                    dateInput.value = currentDate.toISOString().split('T')[0];
-                    triggerLoad();
+                    // Trượt hẳn bảng sang trái rồi mờ đi
+                    touchZone.style.transform = `translateX(-100%)`;
+                    touchZone.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        currentDate.setDate(currentDate.getDate() + 1);
+                        dateInput.value = currentDate.toISOString().split('T')[0];
+                        triggerLoad();
+                        resetTouchZone(100); // Chuẩn bị cho bảng mới trượt vào từ bên phải
+                    }, 300);
+                } else {
+                    // Trả lại vị trí cũ vì bị chặn ngày
+                    touchZone.style.transform = `translateX(0px)`;
                 }
             } else {
-                // Vuốt phải -> Lùi lại (Prev Day) - Không chặn
-                currentDate.setDate(currentDate.getDate() - 1);
-                dateInput.value = currentDate.toISOString().split('T')[0];
-                triggerLoad();
+                // Vuốt phải -> Lùi lại (Prev Day)
+                // Trượt hẳn bảng sang phải rồi mờ đi
+                touchZone.style.transform = `translateX(100%)`;
+                touchZone.style.opacity = '0';
+                
+                setTimeout(() => {
+                    currentDate.setDate(currentDate.getDate() - 1);
+                    dateInput.value = currentDate.toISOString().split('T')[0];
+                    triggerLoad();
+                    resetTouchZone(-100); // Chuẩn bị cho bảng mới trượt vào từ bên trái
+                }, 300);
             }
+        } else {
+            // Không đủ lực kéo -> Nảy về vị trí ban đầu
+            touchZone.style.transform = `translateX(0px)`;
         }
+        currentTranslate = 0;
     }, {passive: true});
+
+    // Hàm thiết lập lại vị trí chờ trượt vào
+    function resetTouchZone(startPosPercent) {
+        touchZone.style.transition = 'none';
+        touchZone.style.transform = `translateX(${startPosPercent}%)`;
+        
+        setTimeout(() => {
+            touchZone.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+            touchZone.style.transform = `translateX(0px)`;
+            touchZone.style.opacity = '1';
+        }, 50);
+    }
     // ---------------------------------------------
 
     initApp();
